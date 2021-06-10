@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import joblib
+from twistgan import *
 
 from scipy.io.arff import loadarff 
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
@@ -114,7 +115,7 @@ def run_rf(ds_name,df, save=False):
     roc_auc (float): auc metric
   """
   X_train, X_test, y_train, y_test = preprocess(df)
-  clf = RandomForestClassifier(max_depth=15, random_state=0,n_estimators=10)
+  clf = RandomForestClassifier(max_depth=20, random_state=0,n_estimators=100)
   clf.fit(X_train, y_train)
   y_pred=clf.predict(X_test)
   
@@ -124,29 +125,36 @@ def run_rf(ds_name,df, save=False):
   roc_auc = round(roc_auc_score(y_test, probs),2)
   if save:
     joblib.dump(clf, RF_MODEL_PATH+f"rf_model_{ds_name}.joblib")
+  print(f'Accuracy: {acc}, AUC: {roc_auc}')
   return acc, roc_auc
 
-from twistgan import * 
 
-DIABETES_PATH = '/content/drive/Shareddrives/Ass4-DL/diabetes.arff'
-GERMAN_PATH = '/content/drive/Shareddrives/Ass4-DL/german_credit.arff'
-RF_MODEL_PATH = '/content/drive/Shareddrives/Ass4-DL/'
+def main():
+  db_names = ['diabetes','german']
+  path = [DIABETES_PATH,GERMAN_PATH]
+  models = [DIABETES_RF_MODEL_PATH,GERMAN_RF_MODEL_PATH]
+
+  for i in range(len(path)) :
+    print(path[i])
+    df = load_data_arff(path[i])
+    run_rf(db_names[i],df,SAVE_MODEL) #train random forest on data and save model (opt)
+    model = joblib.load(models[i])
+    X_train, X_test, y_train, y_test = preprocess(df)
+    df = pd.concat([X_train, X_test])
+    gan = TwistGAN(df.shape[1],model)
+    gan.train(df,EPOCHS)
+    real_pred, fake_pred = gan.evalute_model(100)
+
+DIABETES_PATH = '/dataset/diabetes.arff'
+GERMAN_PATH = '/datasetL/german_credit.arff'
+RF_MODEL_PATH = '/models'
 DIABETES_RF_MODEL_PATH = RF_MODEL_PATH+'rf_model_diabetes.joblib'
 GERMAN_RF_MODEL_PATH = RF_MODEL_PATH+'rf_model_german.joblib'
 EPOCHS = 5000
 SAVE_MODEL = False
+     
 
-db_names = ['diabetes','german']
-path = [DIABETES_PATH,GERMAN_PATH]
-models = [DIABETES_RF_MODEL_PATH,GERMAN_RF_MODEL_PATH]
 
-for i in range(len(path)) :
-  print(path[i])
-  df = load_data_arff(path[i])
-  run_rf(db_names[i],df,SAVE_MODEL) #train random forest on data and save model (opt)
-  model = joblib.load(models[i])
-  X_train, X_test, y_train, y_test = preprocess(df)
-  df = pd.concat([X_train, X_test])
-  gan = TwistGAN(df.shape[1],model)
-  gan.train(df,EPOCHS)
-  real_pred, fake_pred = gan.evalute_model(100)
+if __name__ == "__main__":
+  
+    main()
