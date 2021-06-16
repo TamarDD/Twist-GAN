@@ -146,7 +146,7 @@ def main():
     real_pred, fake_pred = gan.evalute_model(100)
 
 DIABETES_PATH = '/dataset/diabetes.arff'
-GERMAN_PATH = '/datasetL/german_credit.arff'
+GERMAN_PATH = '/dataset/german_credit.arff'
 RF_MODEL_PATH = '/models'
 DIABETES_RF_MODEL_PATH = RF_MODEL_PATH+'rf_model_diabetes.joblib'
 GERMAN_RF_MODEL_PATH = RF_MODEL_PATH+'rf_model_german.joblib'
