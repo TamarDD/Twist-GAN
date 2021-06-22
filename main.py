@@ -13,12 +13,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import roc_auc_score,accuracy_score
 
-DIABETES_PATH = '/content/drive/Shareddrives/Ass4-DL/diabetes.arff'
-GERMAN_PATH = '/content/drive/Shareddrives/Ass4-DL/german_credit.arff'
-RF_MODEL_PATH = '/content/drive/Shareddrives/Ass4-DL/'
-DIABETES_RF_MODEL_PATH = RF_MODEL_PATH+'rf_model_diabetes.joblib'
-GERMAN_RF_MODEL_PATH = RF_MODEL_PATH+'rf_model_german.joblib'
-
 """# Functions"""
 
 def load_data_arff(file_path):
